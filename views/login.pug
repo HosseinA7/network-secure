@@ -1,0 +1,38 @@
+doctype html
+html
+  head
+    title #{title}
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
+    link(rel='stylesheet',type='text/css', href='/css/style.css')
+  body
+    h2
+      | Social Media
+    .container
+      form(action='/login', method='POST')
+        .row
+          h2(style='text-align:center;') Login with Social Media or Manually
+          .vl
+            span.vl-innertext or
+          .col
+            a.fb.btn(href='#')
+              i.fa.fa-facebook.fa-fw
+              |  Login with Facebook
+            a.twitter.btn(href='#')
+              i.fa.fa-twitter.fa-fw
+              |  Login with Twitter
+            a.google.btn(href='#')
+              i.fa.fa-google.fa-fw
+              |  Login with Google+
+          .col
+            .hide-md-lg
+              p Or sign in manually:
+            input(type='text', name='username', placeholder='Username', required='')
+            input(type='password', name='password', placeholder='Password', required='')
+            input(type='submit', value='Login')
+    .bottom-container
+      .row
+        .col
+          a.btn(href='#', style='color:white;') Sign up
+        .col
+          a.btn(href='#', style='color:white;') Forgot password?
