@@ -2,3 +2,17 @@ body{
     margin: 0 auto;
     width:60%;
 }
+.send{
+    margin-top: 10px;
+    background-color: #4CAF50;
+    padding: 7px 22px;
+    color: white;
+    border-radius: 2px;
+}
+.logout{
+    margin-top: 10px;
+    background-color: rgb(255, 71, 71);
+    padding: 7px 15px;
+    color: white;
+    border-radius: 2px;
+}

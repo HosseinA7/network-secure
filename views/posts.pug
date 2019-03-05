@@ -8,8 +8,10 @@ html
         include ../public/css/style2.css
     title #{title}
   body
-    form
+    form(action='/posts',method='post')
         label(for='exampleFormControlTextarea1') Enter Your Post
         textarea(autofocus='', placeholder='Post your message here...')#exampleFormControlTextarea1.form-control(rows='3')
-
+        button(type="button").send Send
+    form(action='/logout',method='post')
+        button.logout Logout    
 
