@@ -3,7 +3,7 @@ body{
     width:60%;
 }
 .send{
-    margin-top: 10px;
+    margin-top: 25px;
     background-color: #4CAF50;
     padding: 7px 22px;
     color: white;
@@ -15,4 +15,8 @@ body{
     padding: 7px 15px;
     color: white;
     border-radius: 2px;
+}
+.btn{
+    margin: 0 auto;
+    width: 60%;
 }

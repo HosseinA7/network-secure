@@ -2,22 +2,24 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const User = require('./users');
-const mongoose = require('mongoose');
-mongoose.set('useCreateIndex', true);
-mongoose.connect('mongodb://localhost:27017/NetSecurity', { useNewUrlParser: true });
-
-
-
 const app = express();
+const { Pool, Client } = require('pg')
+const connectionString = 'postgresql://admin:*****@localhost:8888/netSecure'
+
+
+const pool = new Pool({
+    connectionString: connectionString
+})
+const client = new Client({
+    connectionString: connectionString
+})
 
 app.set('views', path.join(__dirname, './views'));
 app.set('view engine', 'pug');
 app.use(express.static(__dirname + '/public'));
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
 app.use(session({
     name: 'sid',
     saveUninitialized: true,
@@ -59,9 +61,7 @@ app.use((req, res, next) => {
 })
 
 
-
 app.get('/', redirectHome, (req, res) => {
-    console.log(User);
     const { userId } = req.session;
     res.render('login.pug');
 
@@ -77,64 +77,83 @@ app.get('/register', redirectHome, (req, res) => {
 
 })
 // ??????????????????????????????????????????????????????
-app.post('/posts',redirectHome,(req,res) =>{
-    User.insert({
-        "posts":posts.push("post")
+app.post('/posts', redirectHome, (req, res) => {
+    pool.query('SELECT post from users where id=3', (err, result) => {
+        if (err) return console.log('error in query', err);
+        // need to check if post exists
+        // let post = (result.rows.length > 0) ? result.rows[0] : null;
+        // let postInString = JSON.stringify(post);
+        console.log(postInString);
+        //   postInString.replace('{', '');
+        res.render('posts.pug', {
+            title: "Welcome!" + username,
+            // post: postInString,
+        });
+        res.end();
     });
-
-    res.render('posts.pug');
 
 })
 
 app.post('/', redirectHome, (req, res) => {
-        var username = req.body.username;
-        var password = req.body.password;
-        User.findOne({username : username , password : password},function(err,user){
-            if(err){
-                console.log(err);
-                res.status(500).send();
-                
-            } 
-            if(!user){
-                console.log('wrong user: '+user);
-                return res.render('404.pug');
-            }
-            console.log('valid user: '+user);
-            req.session.user = user;
-            return res.render('posts.pug');
-        })
-    });
+    var Enteredusername = req.body.username;
+    var Enteredpassword = req.body.password;
+    Enteredusername = Enteredusername.toLowerCase();
 
-app.post('/register', redirectHome, (req, res) => {
-    const { username, password } = req.body;
-    if (username && password) {
-        const exists = users.some(
-            user => user.username === username
-        )
-        if(!exists){
-            const user = {
-                id: user.length + 1,
-                username,
-                password
-            }
-            users.push(user)
-            req.session.userId = user.id
-            return res.render('posts.pug')
+    pool.query("SELECT * FROM users WHERE username = $1 AND password = $2 ", [Enteredusername, Enteredpassword], (err, result) => {
+        if (err) return console.log('error in query', err);
+        // need to check if user exists
+        let user = (result.rows.length > 0) ? result.rows[0] : null;
+        if (!user) {
+            return res.redirect('/404');
         }
-    }
-    res.redirect('/register');
-})
+        let userInString = JSON.stringify(user);
+        console.log(userInString);
+        userInString.replace('{', '').replace('}', '');
+        res.render('posts.pug', {
+            title: "Welcome " + Enteredusername,
+            user: userInString,
+        });
+        res.end();
+    });
+});
+
+
+// *register page
+// app.post('/register', redirectHome, (req, res) => {
+//     const { username, password } = req.body;
+//     if (username && password) {
+//         const exists = users.some(
+//             user => user.username === username
+//         )
+//         if (!exists) {
+//             const user = {
+//                 id: user.length + 1,
+//                 username,
+//                 password
+//             }
+//             users.push(user)
+//             req.session.userId = user.id
+//             return res.render('posts.pug')
+//         }
+//     }
+//     res.redirect('/register');
+// })
+
+app.get('/404', (req, res) => {
+    res.render('404.pug');
+});
+
 
 app.post('/logout', redirectLogin, (req, res) => {
 
     req.session.destroy(err => {
-        if(err){
+        if (err) {
             return res.render('posts.pug');
         }
-        res.clearCookie('sid')
+        res.clearCookie('sid');
 
-        res.redirect('/')
-    })
-})
+        res.redirect('/');
+    });
+});
 
-app.listen(3000, () => console.log('http://localhost:3000'))
+app.listen(3000, () => console.log('http://localhost:3000'));
