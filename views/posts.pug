@@ -9,13 +9,17 @@ html
     title #{title}
   body
     p #{user}
-    form(action='/posts',method='post')
+    form(action='/posts',method='POST')
         label(for='exampleFormControlTextarea1') Enter Your Post
-        textarea(autofocus='', placeholder='Post your message here...')#exampleFormControlTextarea1.form-control(rows='3')
-        button.btn.btn-primary.btn-block.send(type='button') Add Post
-    form(action='/logout',method='post')
+        textarea(name='editor1')
+        button.btn.btn-primary.btn-block.send Add Post
+    form(action='/logout',method='POST')
         button.btn.btn-primary.btn-block.logout Logout
+    script(src='/ckeditor/ckeditor.js')
+    script.
+      CKEDITOR.replace( 'editor1' );
     p #{post}
+
 
 
 
