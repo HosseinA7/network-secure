@@ -1,6 +1,5 @@
 body{
     margin: 0 auto;
-    width:60%;
 }
 .send{
     margin-top: 25px;
@@ -16,12 +15,32 @@ body{
     color: white;
     border-radius: 2px;
 }
-.btn{
-    margin: 0 auto;
-    width: 60%;
+.btn1{
+    display: block;
+    margin-top: 15px;
+    margin-left:auto; 
+    margin-right:auto; 
 }
 
 .input{
     height: 300px;
     margin-bottom: 30px;
+}
+
+.satr{
+    vertical-align: middle;
+
+}
+
+
+.satr{
+    vertical-align: middle !important;
+}
+.colu{
+    border: 0.2px ridge rgb(0, 71, 2);
+    background-color: rgb(180, 179, 179);
+    text-align: center;
+}
+p{
+    margin-bottom: 0rem !important;
 }
