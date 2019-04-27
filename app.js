@@ -12,7 +12,6 @@ const {
     check,
     validationResult
 } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
 const connectionString = 'postgresql://postgres:0770@localhost:5432/netsecure'
 
 
@@ -160,7 +159,7 @@ app.post('/posts', redirectHome, (req, res) => {
         res.redirect('/posts');
         res.end();
     }
-     Cleanpost = sanitizer.escape(EnteredPost); // Escapes HTML special characters in attribute values as HTML entities
+     Cleanpost = sanitizer.sanitize(EnteredPost); // Escapes HTML special characters in attribute values as HTML entities
      console.log(Cleanpost);
     
     pool.query("INSERT INTO tbl_posts(post_text, username) VALUES($1,$2) RETURNING *", [Cleanpost, req.session.userId], (err, result) => {
