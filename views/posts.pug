@@ -6,6 +6,7 @@ html
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js')
+    script(src='./js/checkboxEncryption.js')
     style
         include ../public/css/style2.css
     title #{title}
@@ -15,6 +16,10 @@ html
         form(action='/posts',method='POST')
             label(for='exampleFormControlTextarea1') Enter Your Post
             textarea(name='editor1')
+            .d-flex.justify-content-center
+                input.mt-4.mr-2#myCheck(type='checkbox', onclick='myFunction()')
+                p.mt-3.mr-2 Encryption
+                input.mt-2.ml-2#keytext(type='number', name='key', style='display:none')
             button.btn.btn-success.btn1 Add Post
         form(action='/logout',method='POST')
             button.btn.btn-danger.btn1 Logout
@@ -26,10 +31,16 @@ html
                     tr.satr
                       th.colu Username
                       th.colu Post
+                      th.colu Decode
                     each n in Post
                      tr
                         td.satr
                           p.text-capitalize!= n.username
                         td.satr
-                          p!= n.post_text                 
+                          p!= n.post_text      
+                        td.satr
+                           .input-group.mb-2.mt-2
+                              input.form-control(type='number', placeholder="Enter your key (Must be 8 characters!)", aria-label="Enter your key(Must be 8 characters!)", aria-describedby='basic-addon2')
+                              .input-group-append
+                                button.btn.btn-outline-secondary(type='button') Decode          
             
