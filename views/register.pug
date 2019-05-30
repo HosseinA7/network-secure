@@ -69,7 +69,7 @@ html
       }
     title #{title}    
   body
-    form(action='/register' , method='post')
+    form(action='/' , method='post')
       .container
         h1 Register
         p.red **Note: The register process is currently unavailable due to the privacy policy.
@@ -83,7 +83,7 @@ html
         input(type='password', placeholder='Enter Password', name='password', required='')
         label(for='psw-repeat')
           b Repeat Password
-        input(type='password', placeholder='Repeat Password', name='psw-repeat', required='')
+        input(type='password', placeholder='Repeat Password', name='pswrepeat', required='')
         hr
         p
           | By creating an account you agree to our 
@@ -93,5 +93,5 @@ html
       .container.signin
         p
           | Already have an account? 
-          a(href='/') Sign in
+          a(href='/login') Sign in
           | .

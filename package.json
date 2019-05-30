@@ -12,6 +12,7 @@
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^12.0.0",
     "alert-node": "^1.2.3",
+    "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
     "connect-flash": "^0.1.1",
     "dialogs": "^1.1.20",
