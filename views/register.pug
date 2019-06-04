@@ -69,11 +69,21 @@ html
       }
     title #{title}    
   body
-    form(action='/' , method='post')
+    form(name="sendin",action='/', method='POST')
+          input(type='hidden', name='username')
+          | &#x9;&#x9;
+          input(type='hidden', name='password')
+    script(type='text/javascript', src='/js/sha256.min.js') 
+    script(type='text/javascript').
+              function doLogin() {
+              document.sendin.username.value = document.login.username.value;
+              document.sendin.password.value = sha256(document.login.password.value);
+              document.sendin.submit();
+              return false;
+              }  
+    form(name="login",action='/' , method='post',onSubmit="return doLogin()")
       .container
         h1 Register
-        p.red **Note: The register process is currently unavailable due to the privacy policy.
-        p Please fill in this form to create an account.
         hr
         label(for='email')
           b User Name
@@ -84,11 +94,6 @@ html
         label(for='psw-repeat')
           b Repeat Password
         input(type='password', placeholder='Repeat Password', name='pswrepeat', required='')
-        hr
-        p
-          | By creating an account you agree to our 
-          a(href='#') Terms & Privacy
-          | .
         button.registerbtn(type='submit') Register
       .container.signin
         p

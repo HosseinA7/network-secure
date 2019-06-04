@@ -4,8 +4,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const sanitizer = require('sanitizer');
-var crypto = require('crypto');
-
+const flash = require('express-flash-messages')
 
 const app = express();
 const {
@@ -31,6 +30,7 @@ app.use(expressValidator())
 
 
 
+app.use(flash())
 
 app.set('views', path.join(__dirname, './views'));
 app.set('view engine', 'pug');
@@ -87,58 +87,6 @@ app.get('/', (req, res) => {
 
 });
 
-
-
-app.post('/login', [
-    check('username').isLength({
-        max: 10
-    }),
-    check('password').isLength({
-        max: 15
-    }),
-
-
-], (req, res) => {
-    // Finds the validation errors in this request and wraps them in an object with handy functions
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        //return res.status(422).json( 'SQl INJECTION DETECTED !' );
-        return res.redirect('/404');
-    }
-
-
-
-    var Enteredusername = req.body.username;
-    var Enteredpassword = req.body.password;
-
-    Enteredusername = Enteredusername.toLowerCase();
-
-    var hash = crypto.createHash('sha256');
-
-    var hash = crypto.createHash('sha256').update(Enteredpassword).digest('hex');
-
-        pool.query("SELECT * FROM tbl_users WHERE username = $1 AND password = $2 ", [Enteredusername, hash], (err, result) => {
-            if (err) return console.log('error in query', err);
-            // need to check if user exists
-            let user = (result.rows.length > 0) ? result.rows[0] : null;
-            if (!user) {
-                return res.redirect('/404');
-            }
-            let userInString = JSON.stringify(user);
-            console.log(userInString);
-            userInString.replace('{', '').replace('}', '');
-            req.session.userId = Enteredusername;
-            res.redirect('/posts')
-            //, {
-            //     title: "Welcome " + Enteredusername,
-            //     user: userInString,
-            // });
-            res.end();
-        });
-
-
-
-});
 app.get('/posts', redirectHome, (req, res) => {
     //console.log(req.session.userId);
 
@@ -159,6 +107,62 @@ app.get('/posts', redirectHome, (req, res) => {
         res.end();
     });
 })
+
+app.post('/login', [
+    check('username').isLength({
+        max: 15
+    }),
+    check('password').isLength({
+        max: 60
+    }),
+
+
+], (req, res) => {
+    // Finds the validation errors in this request and wraps them in an object with handy functions
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        //return res.status(422).json( 'SQl INJECTION DETECTED !' );
+        req.flash('notify', 'This is a test notification.')
+        res.render('login', {
+            messages: req.flash('notify')
+        });
+    }
+
+
+
+    var Enteredusername = req.body.username;
+    var Enteredpassword = req.body.password;
+
+    Enteredusername = Enteredusername.toLowerCase();
+
+    pool.query("SELECT * FROM tbl_users WHERE username = $1 AND password = $2 ", [Enteredusername, Enteredpassword], (err, result) => {
+        if (err) return console.log('error in query', err);
+        // need to check if user exists
+        let user = (result.rows.length > 0) ? result.rows[0] : null;
+        if (!user) {
+
+            req.flash('notify', 'This is a test notification.')
+            res.render('login', {
+                messages: req.flash('Username or Password is incorrect !')
+            });
+            console.log('kire if');
+
+            return res.redirect('/login')
+ 
+
+        } else {
+            console.log('kire else');
+            
+            let userInString = JSON.stringify(user);
+            console.log(userInString);
+            userInString.replace('{', '').replace('}', '');
+            req.session.userId = Enteredusername;
+            res.redirect('/posts')
+        }
+    });
+
+});
+
 
 
 app.post('/posts', redirectHome, (req, res) => {
@@ -214,23 +218,21 @@ app.post('/', (req, res) => {
 
         let user = (result.rows.length > 0) ? result.rows[0] : null;
         if (user) {
+
             return res.send('Username already Exists');
-        }
+        } 
     });
 
 
-    var hash = crypto.createHash('sha256');
 
-    var hash = crypto.createHash('sha256').update(password).digest('hex');
+    pool.query("INSERT INTO tbl_users(username, password) VALUES($1,$2) RETURNING *", [cleanuser, password], (err, result) => {
+        if (err) return console.log('error in query', err);
 
-        pool.query("INSERT INTO tbl_users(username, password) VALUES($1,$2) RETURNING *", [cleanuser, hash], (err, result) => {
-            if (err) return console.log('error in query', err);
-
-            let newUser = (result.rows.length > 0) ? result.rows[0] : null;
-            if (!newUser) {
-                return res.send('Please fill the input texts');
-            }
-        });
+        let newUser = (result.rows.length > 0) ? result.rows[0] : null;
+        if (!newUser) {
+            return res.send('Please fill the input texts');
+        }
+    });
 
 
     res.redirect('/login');

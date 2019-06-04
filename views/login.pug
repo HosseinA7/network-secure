@@ -7,10 +7,22 @@ html
     link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
     link(rel='stylesheet',type='text/css', href='/css/style.css')
   body
+        form(name="sendin",action='/login', method='POST')
+          input(type='hidden', name='username')
+          | &#x9;&#x9;
+          input(type='hidden', name='password')
+        script(type='text/javascript', src='/js/sha256.min.js') 
+        script(type='text/javascript').
+              function doLogin() {
+              document.sendin.username.value = document.login.username.value;
+              document.sendin.password.value = sha256(document.login.password.value);
+              document.sendin.submit();
+              return false;
+              }
         h2
           | Social Media
         .container
-          form(action='/login', method='POST')
+          form(name="login",action='/login', method='POST', onSubmit="return doLogin()")
             .row
               h2(style='text-align:center;') Login with Social Media or Manually
               .vl
@@ -28,9 +40,18 @@ html
               .col
                 .hide-md-lg
                   p Or sign in manually:
+                div#note
+                  - var messages = getMessages()
+
+                  if messages.notify
+                      each msg in messages.info
+                          .info= msg
+                  if messages.error
+                      each msg in messages.error
+                          .error= msg
                 input(type='text', name='username', placeholder='Username', required='')
                 input(type='password', name='password', placeholder='Password', required='')
-                input(type='submit', value='Login')
+                input(type='submit', value='Login' )
         .bottom-container
           .row
             .col
