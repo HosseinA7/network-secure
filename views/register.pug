@@ -85,6 +85,15 @@ html
       .container
         h1 Register
         hr
+        div#note
+          - var messages = getMessages()
+
+          if messages.notify
+              each msg in messages.info
+                  .info= msg
+          if messages.error
+              each msg in messages.error
+                  .error= msg
         label(for='email')
           b User Name
         input(type='text', placeholder='Enter Username', name='username', required='')

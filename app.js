@@ -109,24 +109,24 @@ app.get('/posts', redirectHome, (req, res) => {
 })
 
 app.post('/login', [
-    check('username').isLength({
-        max: 15
-    }),
-    check('password').isLength({
-        max: 60
-    }),
+    // check('username').isLength({
+    //     max: 15
+    // }),
+    // check('password').isLength({
+    //     max: 60
+    // }),
 
 
 ], (req, res) => {
     // Finds the validation errors in this request and wraps them in an object with handy functions
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        //return res.status(422).json( 'SQl INJECTION DETECTED !' );
-        req.flash('notify', 'This is a test notification.')
-        res.render('login', {
-            messages: req.flash('notify')
-        });
-    }
+    // if (!errors.isEmpty()) {
+    //     //return res.status(422).json( 'SQl INJECTION DETECTED !' );
+    //     req.flash('notify', 'This is a test notification.')
+    //     res.render('login', {
+    //         messages: req.flash('notify')
+    //     });
+    // }
 
 
 
@@ -139,20 +139,17 @@ app.post('/login', [
         if (err) return console.log('error in query', err);
         // need to check if user exists
         let user = (result.rows.length > 0) ? result.rows[0] : null;
+        console.log(user);
+
         if (!user) {
 
             req.flash('notify', 'This is a test notification.')
             res.render('login', {
                 messages: req.flash('Username or Password is incorrect !')
             });
-            console.log('kire if');
-
-            return res.redirect('/login')
- 
 
         } else {
-            console.log('kire else');
-            
+
             let userInString = JSON.stringify(user);
             console.log(userInString);
             userInString.replace('{', '').replace('}', '');
@@ -214,28 +211,34 @@ app.post('/', (req, res) => {
     cleanuser = cleanuser.toLowerCase();
 
     pool.query("select from tbl_users where username = $1", [cleanuser], (err, result) => {
-        if (err) return console.log('error in query', err);
 
         let user = (result.rows.length > 0) ? result.rows[0] : null;
         if (user) {
 
-            return res.send('Username already Exists');
-        } 
+            req.flash('notify', 'This is a test notification.')
+            res.render('register', {
+                messages: req.flash('Username already Exists !')
+            });
+            return
+        }
+        if (err) {return console.log('error in query', err);}
+
     });
 
 
 
     pool.query("INSERT INTO tbl_users(username, password) VALUES($1,$2) RETURNING *", [cleanuser, password], (err, result) => {
-        if (err) return console.log('error in query', err);
 
-        let newUser = (result.rows.length > 0) ? result.rows[0] : null;
-        if (!newUser) {
-            return res.send('Please fill the input texts');
-        }
+        // let newUser = (result.rows.length > 0) ? result.rows[0] : null;
+        // if (!newUser) {
+        //     return res.send('Please fill the input texts');
+        // }
+        if (err) {return console.log('error in query2', err);}
+
     });
 
 
-    res.redirect('/login');
+    return res.redirect('/login');
 })
 
 
